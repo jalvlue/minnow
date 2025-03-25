@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <deque>
+#include <queue>
 #include <string>
 #include <string_view>
-#include <vector>
 
 class Reader;
 class Writer;
@@ -25,11 +24,9 @@ public:
 
 protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
-  std::vector<char> buf; // ring buffer
+  std::queue<std::string> buf; // use queue of string to prevent data copy while push
   uint64_t capacity_;
-  uint64_t size_; 
-  uint64_t head_; // front of buffer
-  uint64_t tail_; // tail of buffer
+  uint64_t size_;
   uint64_t bytes_pushed_;
   uint64_t bytes_popped_;
   bool error_ {};
