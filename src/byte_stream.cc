@@ -1,11 +1,14 @@
 #include "byte_stream.hh"
+#include <vector>
 
 using namespace std;
 
 ByteStream::ByteStream( uint64_t capacity )
-  : buf()
+  : buf( capacity )
   , capacity_( capacity )
   , size_( 0 )
+  , head_( 0 )
+  , tail_( 0 )
   , bytes_pushed_( 0 )
   , bytes_popped_( 0 )
   , error_( false )
@@ -19,7 +22,10 @@ void Writer::push( string data )
   }
 
   auto num_pushed = min( this->available_capacity(), data.size() );
-  this->buf.insert( this->buf.end(), data.begin(), data.begin() + num_pushed );
+  for ( uint64_t i = 0; i < num_pushed; ++i ) {
+    this->buf[this->tail_] = data[i];
+    this->tail_ = ( this->tail_ + 1 ) % this->capacity_;
+  }
   this->size_ += num_pushed;
   this->bytes_pushed_ += num_pushed;
 }
@@ -51,13 +57,13 @@ string_view Reader::peek() const
   if ( this->size_ == 0 ) {
     return "";
   }
-  return string_view { &this->buf.front(), 1 };
+  return string_view { &this->buf[this->head_], 1 };
 }
 
 void Reader::pop( uint64_t len )
 {
   auto num_popped = min( len, this->size_ );
-  this->buf.erase( this->buf.begin(), this->buf.begin() + num_popped );
+  this->head_ = ( this->head_ + num_popped ) % this->capacity_;
   this->size_ -= num_popped;
   this->bytes_popped_ += num_popped;
 }

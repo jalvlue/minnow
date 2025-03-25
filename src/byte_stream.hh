@@ -4,6 +4,7 @@
 #include <deque>
 #include <string>
 #include <string_view>
+#include <vector>
 
 class Reader;
 class Writer;
@@ -24,9 +25,11 @@ public:
 
 protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
-  std::deque<char>buf;
+  std::vector<char> buf; // ring buffer
   uint64_t capacity_;
-  uint64_t size_; // number of bytes in the buffer currently (pushed but not popped)
+  uint64_t size_; 
+  uint64_t head_; // front of buffer
+  uint64_t tail_; // tail of buffer
   uint64_t bytes_pushed_;
   uint64_t bytes_popped_;
   bool error_ {};
