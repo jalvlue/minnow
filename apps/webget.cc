@@ -1,16 +1,31 @@
+#include "address.hh"
 #include "socket.hh"
 
 #include <cstdlib>
+#include <format>
 #include <iostream>
 #include <span>
 #include <string>
+#include <utility>
 
 using namespace std;
 
 void get_URL( const string& host, const string& path )
 {
-  cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
+  // create a tcp stream socket and connect to server as a client
+  auto sock = TCPSocket {};
+  sock.connect( Address { host, "http" } );
+
+  // issue and sent the request
+  auto req = format( "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n", path, host );
+  sock.write( std::move( req ) );
+
+  // read response back
+  string resp {};
+  while ( !sock.eof() ) { // set `Connection: close` would close the connection and set sock.eof
+    sock.read( resp );
+    cout << resp;
+  }
 }
 
 int main( int argc, char* argv[] )
