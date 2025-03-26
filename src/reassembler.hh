@@ -1,12 +1,15 @@
 #pragma once
 
 #include "byte_stream.hh"
+#include <unordered_map>
 
 class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
+  explicit Reassembler( ByteStream&& output )
+    : first_index_2_data_excerpt_(), output_( std::move( output ) ), with_last_substring_( false )
+  {}
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.
@@ -42,5 +45,7 @@ public:
   const Writer& writer() const { return output_.writer(); }
 
 private:
+  std::unordered_map<uint64_t, std::string> first_index_2_data_excerpt_;
   ByteStream output_;
+  bool with_last_substring_;
 };

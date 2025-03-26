@@ -12,6 +12,11 @@ ByteStream::ByteStream( uint64_t capacity )
   , error_( false )
   , close_( false ) {};
 
+uint64_t ByteStream::capacity() const
+{
+  return this->capacity_;
+}
+
 void Writer::push( string data )
 {
   // return directly
