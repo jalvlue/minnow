@@ -8,7 +8,7 @@ class Reassembler
 public:
   // Construct Reassembler to write into given ByteStream.
   explicit Reassembler( ByteStream&& output )
-    : buffer_(), output_( std::move( output ) ), with_last_substring_( false )
+    : buffer_(), output_( std::move( output ) ), final_end_index( UINT64_MAX )
   {}
 
   /*
@@ -47,10 +47,8 @@ public:
 private:
   std::map<uint64_t, std::string> buffer_;
   ByteStream output_;
-  bool with_last_substring_;
+  uint64_t final_end_index; // record the index of last byte in the stream if it appears
 
-  uint64_t byte_stream_next_index() const
-  {
-    return this->reader().bytes_buffered() + this->reader().bytes_popped();
-  };
+  std::pair<uint64_t, uint64_t> buffer_bound() const;
+  void trim_data( uint64_t, uint64_t, uint64_t&, std::string& ) const;
 };
